@@ -19,7 +19,7 @@ from transformers import BertTokenizer, RobertaTokenizer
 
 MAX_LEN = 512
 
-_ROUGE_PATH = '/path/to/RELEASE-1.5.5'
+_ROUGE_PATH = '/content/drive/MyDrive/자연어/과제4'
 temp_path = './temp' # path to store some temporary files
 
 original_data, sent_ids = [], []
@@ -167,7 +167,7 @@ def get_candidates_mp(args):
         tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
         cls, sep = '[CLS]', '[SEP]'
     else:
-        tokenizer = RobertaTokenizer.from_pretrained('roberta-base')
+        tokenizer = RobertaTokenizer.from_pretrained('klue/roberta-large')
         cls, sep = '<s>', '</s>'
     sep_id = tokenizer.encode(sep, add_special_tokens=False)
 
