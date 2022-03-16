@@ -15,7 +15,7 @@ class MatchSum(nn.Module):
         if encoder == 'bert':
             self.encoder = BertModel.from_pretrained('bert-base-uncased')
         else:
-            self.encoder = RobertaModel.from_pretrained('roberta-base')
+            self.encoder = RobertaModel.from_pretrained('klue/roberta-base')
 
     def forward(self, text_id, candidate_id, summary_id):
         
