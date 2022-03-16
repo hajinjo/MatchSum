@@ -19,7 +19,7 @@ from transformers import BertTokenizer, RobertaTokenizer, AutoTokenizer
 
 MAX_LEN = 512
 
-_ROUGE_PATH = '/content/drive/MyDrive/자연어/과제4'
+_ROUGE_PATH = '/content'
 temp_path = './temp' # path to store some temporary files
 
 original_data, sent_ids = [], []
