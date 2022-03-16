@@ -15,7 +15,7 @@ from cytoolz import curry
 from pyrouge.utils import log
 from pyrouge import Rouge155
 
-from transformers import BertTokenizer, RobertaTokenizer
+from transformers import BertTokenizer, RobertaTokenizer, AutoTokenizer
 
 MAX_LEN = 512
 
@@ -167,7 +167,7 @@ def get_candidates_mp(args):
         tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
         cls, sep = '[CLS]', '[SEP]'
     else:
-        tokenizer = RobertaTokenizer.from_pretrained('klue/roberta-base')
+        tokenizer = AutoTokenizer.from_pretrained('klue/roberta-base')
         cls, sep = '<s>', '</s>'
     sep_id = tokenizer.encode(sep, add_special_tokens=False)
 
