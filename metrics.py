@@ -10,8 +10,9 @@ from datetime import timedelta
 from time import time
 from itertools import combinations
 
-from pyrouge import Rouge155
-from pyrouge.utils import log
+from rouge_score import RougeScorer
+# from pyrouge import Rouge155
+# from pyrouge.utils import log
 from rouge import Rouge
 
 from fastNLP.core.losses import LossBase
@@ -165,7 +166,8 @@ class MatchRougeMetric(MetricBase):
                     print(sent, file=f)
         
         print('Start evaluating ROUGE score !!!')
-        R_1, R_2, R_L = MatchRougeMetric.eval_rouge(self.dec_path, self.ref_path)
+        # R_1, R_2, R_L = MatchRougeMetric.eval_rouge(self.dec_path, self.ref_path)
+        R_1, R_2, R_L = MatchRougeMetric.eval_rouge(dec, ref)
         eval_result = {'ROUGE-1': R_1, 'ROUGE-2': R_2, 'ROUGE-L':R_L}
 
         if reset == True:
@@ -176,34 +178,42 @@ class MatchRougeMetric(MetricBase):
         return eval_result
         
     @staticmethod
-    def eval_rouge(dec_dir, ref_dir, Print=True):
-        assert _ROUGE_PATH is not None
-        log.get_global_console_logger().setLevel(logging.WARNING)
-        dec_pattern = '(\d+).dec'
-        ref_pattern = '#ID#.ref'
-        cmd = '-c 95 -r 1000 -n 2 -m'
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            Rouge155.convert_summaries_to_rouge_format(
-                dec_dir, join(tmp_dir, 'dec'))
-            Rouge155.convert_summaries_to_rouge_format(
-                ref_dir, join(tmp_dir, 'ref'))
-            Rouge155.write_config_static(
-                join(tmp_dir, 'dec'), dec_pattern,
-                join(tmp_dir, 'ref'), ref_pattern,
-                join(tmp_dir, 'settings.xml'), system_id=1
-            )
-            cmd = (join(_ROUGE_PATH, 'ROUGE-1.5.5.pl')
-                + ' -e {} '.format(join(_ROUGE_PATH, 'data'))
-                + cmd
-                + ' -a {}'.format(join(tmp_dir, 'settings.xml')))
-            output = sp.check_output(cmd.split(' '), universal_newlines=True)
-            R_1 = float(output.split('\n')[3].split(' ')[3])
-            R_2 = float(output.split('\n')[7].split(' ')[3])
-            R_L = float(output.split('\n')[11].split(' ')[3])
-            print(output)
-        if Print is True:
-            rouge_path = join(dec_dir, '../ROUGE.txt')
-            with open(rouge_path, 'w') as f:
-                print(output, file=f)
-        return R_1, R_2, R_L
+    def eval_rouge(dec, ref):
+        # assert _ROUGE_PATH is not None
+        # log.get_global_console_logger().setLevel(logging.WARNING)
+        # dec_pattern = '(\d+).dec'
+        # ref_pattern = '#ID#.ref'
+        # cmd = '-c 95 -r 1000 -n 2 -m'
+        # with tempfile.TemporaryDirectory() as tmp_dir:
+        #     Rouge155.convert_summaries_to_rouge_format(
+        #         dec_dir, join(tmp_dir, 'dec'))
+        #     Rouge155.convert_summaries_to_rouge_format(
+        #         ref_dir, join(tmp_dir, 'ref'))
+        #     Rouge155.write_config_static(
+        #         join(tmp_dir, 'dec'), dec_pattern,
+        #         join(tmp_dir, 'ref'), ref_pattern,
+        #         join(tmp_dir, 'settings.xml'), system_id=1
+        #     )
+        #     cmd = (join(_ROUGE_PATH, 'ROUGE-1.5.5.pl')
+        #         + ' -e {} '.format(join(_ROUGE_PATH, 'data'))
+        #         + cmd
+        #         + ' -a {}'.format(join(tmp_dir, 'settings.xml')))
+        #     output = sp.check_output(cmd.split(' '), universal_newlines=True)
+        #     R_1 = float(output.split('\n')[3].split(' ')[3])
+        #     R_2 = float(output.split('\n')[7].split(' ')[3])
+        #     R_L = float(output.split('\n')[11].split(' ')[3])
+            # print(output)
+
+        # if Print is True:
+        rouge = RougeScorer()
+        score= rouge.compute_rouge(dec, ref)
+        score = score.split(",")
+        rouge1 = float(score[0])
+        rouge2 = float(score[1])
+        rougel = float(score[2])
+        rouge_path = ('../ROUGE.txt')
+        with open(rouge_path, 'w') as f:
+            print(score, file=f)
+
+        return rouge1, rouge2, rougel
     
